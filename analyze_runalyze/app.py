@@ -7,6 +7,9 @@ from plot_calendar import plot_calendar
 if __name__ == "__main__":
     st.title("Your 2024 Running Data")
     st.write(
+        "This is a space to explore ideas for visualizing your running data."
+    )
+    st.write(
         "Source code available at https://github.com/thomascamminady/analyze_runalzye"
     )
 
@@ -62,7 +65,19 @@ if __name__ == "__main__":
                     .axis(titleColor="#F18727"),
                 ),
             )
-            .properties(width=800, height=400)
+            .properties(width=400, height=400)
             .resolve_scale(y="independent")
         )
         st.altair_chart(chart2, theme="streamlit")  # type: ignore
+
+        st.markdown("## Distance vs. Elevation Gain")
+        chart3 = (
+            alt.Chart(df)
+            .mark_point()
+            .encode(
+                x=alt.X("distance:Q").title("Distance (km)"),
+                y=alt.Y("elevationUp:Q").title("Elevation Gain (m)"),
+            )
+            .properties(width=400, height=400)
+        )
+        st.altair_chart(chart3, theme="streamlit")
