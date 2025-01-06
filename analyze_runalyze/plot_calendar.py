@@ -1,15 +1,13 @@
-import json
 from datetime import date
 
 import altair as alt
 import polars as pl
 from color_scheme_names import SCHEME_TYPE
 
-
-@alt.theme.register("my_theme", enable=True)
-def loader():
-    with open("analyze_runalyze/theme.json") as f:
-        return json.load(f)
+# @alt.theme.register("my_theme", enable=True)
+# def loader():
+#     with open("analyze_runalyze/theme.json") as f:
+#         return json.load(f)
 
 
 alt.data_transformers.disable_max_rows()
@@ -68,13 +66,7 @@ def plot_calendar(
         )
     )
 
-    data = (
-        df.with_columns(date=pl.col("time").dt.date())
-        .filter(pl.col("year") == 2024, pl.col("sportid") == 168070)
-        .sort("time", descending=True)
-    )
-
-    _ = (_.join(data, on="date", how="left")).with_columns(
+    _ = (_.join(df, on="date", how="left")).with_columns(
         pl.col("distance").fill_null(0)
     )
 
