@@ -6,6 +6,9 @@ from plot_calendar import plot_calendar
 
 if __name__ == "__main__":
     st.title("Your 2024 running data")
+    st.write(
+        "Source code available at https://github.com/thomascamminady/analyze_runalzye"
+    )
 
     uploaded_file = st.file_uploader(
         label="Got to www.runalyze.com -> Account -> Export data -> Activities -> Drag `runalyze-activities.csv` here.",
