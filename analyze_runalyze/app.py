@@ -6,11 +6,10 @@ from plot_calendar import plot_calendar
 
 if __name__ == "__main__":
     st.title("Your 2024 Running Data")
-    st.write(
-        "This is a space to explore ideas for visualizing your running data."
-    )
-    st.write(
-        "Source code available at https://github.com/thomascamminady/analyze_runalzye"
+    st.markdown(
+        "This is a space to explore ideas for visualizing your running data. "
+        "We will only be looking at your 2024 data where `sportsid==168070`, i.e. running. "
+        "Source code available on [Github](https://github.com/thomascamminady/analyze_runalzye). "
     )
 
     st.markdown("## Upload `runalyze-activities.csv`")
@@ -21,9 +20,11 @@ if __name__ == "__main__":
     if uploaded_file is not None:
         df = (
             pl.read_csv(uploaded_file, infer_schema_length=None)
+            .with_columns(end_time=pl.col("time") + pl.col("s"))
             .with_columns(
                 time=pl.from_epoch(pl.col("time")),
                 created=pl.from_epoch(column=pl.col("created")),
+                time_end=pl.from_epoch(pl.col("end_time")),
             )
             .with_columns(year=pl.col("time").dt.year())
             .with_columns(date=pl.col("time").dt.date())
@@ -81,3 +82,21 @@ if __name__ == "__main__":
             .properties(width=400, height=400)
         )
         st.altair_chart(chart3, theme="streamlit")
+
+        st.markdown("## Time of Day Heatmap")
+        st.altair_chart(
+            alt.Chart(
+                df.filter(
+                    pl.col("time").dt.date() == pl.col("time_end").dt.date()
+                )
+            )
+            .mark_rect(opacity=0.1)
+            .encode(
+                x=alt.X("day(time):O")
+                .sort(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
+                .title("Day of Week"),
+                y=alt.Y("hoursminutes(time):T").title("Time of Day"),
+                y2=alt.Y2("hoursminutes(time_end):T"),
+            )
+            .properties(width=800, height=400),
+        )
